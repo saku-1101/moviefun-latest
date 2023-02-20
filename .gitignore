@@ -25,4 +25,5 @@ dist-ssr
 
 
 # linter and prettier
-.eslintrc.xjs
+.eslintrc.js
+.prettierrc.js
