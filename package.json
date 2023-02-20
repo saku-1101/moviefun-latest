@@ -2,11 +2,12 @@
   "name": "moviefun-latest",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^5.52.0",
