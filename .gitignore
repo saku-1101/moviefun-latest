@@ -27,3 +27,6 @@ dist-ssr
 # linter and prettier
 .eslintrc.js
 .prettierrc.js
+
+# Practice and Memo
+promise.ts
