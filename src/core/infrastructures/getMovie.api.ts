@@ -44,3 +44,17 @@ function getTheatreMovies() {
       console.log(err);
     });
 }
+
+function getPopMovies() {
+  const endpoint = '/movie/popular';
+  const query = '&region=JP|US&language=ja-JA&page=1';
+  const url = endpoint + '?api_key=' + env.API_KEY + query;
+  return axiosInstance
+    .get(url)
+    .then(responseBody)
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+getPopMovies();
