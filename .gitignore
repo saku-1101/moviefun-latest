@@ -31,3 +31,6 @@ dist-ssr
 # Practice and Memo
 promise.ts
 promise.js
+
+# env
+env.sh
