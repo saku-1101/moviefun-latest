@@ -9,10 +9,10 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-console.log(env.API_KEY);
 const responseBody = (res: AxiosResponse) => {
   console.log(res);
 };
+
 function getTheatreMovies(): Promise<void> {
   const date = new Date();
   let year: string = date.getUTCFullYear().toString();
@@ -73,4 +73,19 @@ function getTopOfYear(): Promise<void> {
       console.log(err);
     });
 }
-getTopOfYear();
+
+function searchMovie(input: string): Promise<void> {
+  const endpoint = '/search/movie';
+  const language = '&language=ja-JA';
+  const url = endpoint + '?api_key=' + env.API_KEY + '&query=' + input + language;
+  return axiosInstance
+    .get(url)
+    .then(responseBody)
+    .catch((err) => {
+      console.log(err);
+    });
+  // 多分const urlでも大丈夫．．．
+  // UIにインプットしてる時→関数は発火されていない
+  // 関数発火時→新たなセッション．関数もなんでも一新される？
+  // もし，urlにconstが使えなかったら変数をgetに直入れ
+}
