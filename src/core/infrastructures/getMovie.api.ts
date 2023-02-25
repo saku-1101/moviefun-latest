@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { env } from 'node:process';
+// import Movie from '../domains/models/movie.interface'
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: 'https://api.themoviedb.org/3',
@@ -12,7 +13,7 @@ console.log(env.API_KEY);
 const responseBody = (res: AxiosResponse) => {
   console.log(res);
 };
-function getTheatreMovies() {
+function getTheatreMovies(): Promise<void> {
   const date = new Date();
   let year: string = date.getUTCFullYear().toString();
   let month: string = (date.getUTCMonth() + 1).toString();
@@ -45,10 +46,10 @@ function getTheatreMovies() {
     });
 }
 
-function getPopMovies() {
+function getPopMovies(): Promise<void> {
   const endpoint = '/movie/popular';
   const query = '&region=JP|US&language=ja-JA&page=1';
-  const url = endpoint + '?api_key=' + env.API_KEY + query;
+  const url: string = endpoint + '?api_key=' + env.API_KEY + query;
   return axiosInstance
     .get(url)
     .then(responseBody)
@@ -57,4 +58,19 @@ function getPopMovies() {
     });
 }
 
-getPopMovies();
+function getTopOfYear(): Promise<void> {
+  const date: Date = new Date();
+  const year: number = date.getUTCFullYear();
+  const endpoint = '/discover/movie';
+  const query_1 = '&primary_release_year=';
+  const query_2 = '&sort_by=popularity.desc';
+  const language = '&region=JP|US&language=ja-JA&page=1';
+  const url = endpoint + '?api_key=' + env.API_KEY + language + query_1 + (year - 1).toString() + query_2;
+  return axiosInstance
+    .get(url)
+    .then(responseBody)
+    .catch((err) => {
+      console.log(err);
+    });
+}
+getTopOfYear();
