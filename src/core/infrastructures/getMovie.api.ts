@@ -11,6 +11,7 @@ const axiosInstance: AxiosInstance = axios.create({
 
 const responseBody = (res: AxiosResponse) => {
   console.log(res);
+  return res.data;
 };
 
 function getTheatreMovies(): Promise<void> {
@@ -89,3 +90,26 @@ function searchMovie(input: string): Promise<void> {
   // 関数発火時→新たなセッション．関数もなんでも一新される？
   // もし，urlにconstが使えなかったら変数をgetに直入れ
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+// function getFavoriteMovies(params:type) {
+
+// }
+function getIDofMovies() {
+  const endpoint = '/genre/movie/list';
+  const language = '&language=ja-JA';
+  const url = endpoint + '?api_key=' + env.API_KEY + language;
+  return axiosInstance
+    .get(url)
+    .then(responseBody)
+    .catch((error) => {
+      if (error.response) {
+        console.error(`Error: ${error.response.status} ${error.response.statusText}`);
+      } else if (error.request) {
+        console.error('No response received');
+      } else {
+        console.error(`Error: ${error.message}`);
+      }
+    });
+}
+console.log(getIDofMovies());
