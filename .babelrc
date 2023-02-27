@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    [
+      "babel-plugin-root-import",
+      {
+        "rootPathSuffix": "./src"
+      }
+    ]
+  ]
+}
+// https://www.npmjs.com/package/babel-plugin-root-import
