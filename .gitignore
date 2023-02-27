@@ -28,9 +28,9 @@ dist-ssr
 .eslintrc.js
 .prettierrc.js
 
-# Practice and Memo
-promise.ts
-promise.js
-
 # env
 env.sh
+
+# test code
+promise.js
+promise.ts
