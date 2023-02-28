@@ -10,7 +10,7 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 const responseBody = (res: AxiosResponse) => {
-  console.log(res);
+  //   console.log(res);
   return res.data;
 };
 
@@ -91,10 +91,6 @@ function searchMovie(input: string): Promise<void> {
   // もし，urlにconstが使えなかったら変数をgetに直入れ
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-// function getFavoriteMovies(params:type) {
-
-// }
 function getIDofMovies() {
   const endpoint = '/genre/movie/list';
   const language = '&language=ja-JA';
@@ -112,4 +108,7 @@ function getIDofMovies() {
       }
     });
 }
-console.log(getIDofMovies());
+async function log() {
+  console.log(await getIDofMovies());
+}
+log();
