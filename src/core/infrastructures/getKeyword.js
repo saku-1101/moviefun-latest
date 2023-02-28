@@ -36,113 +36,52 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+var child_process_1 = require("child_process");
 var axios_1 = require("axios");
 var node_process_1 = require("node:process");
-var child_process_1 = require("child_process");
+// テキストからキーワードを抽出するPythonスクリプトのパス
+var PYTHON_SCRIPT_PATH = '/Users/saku/Documents/moviefun-latest/src/core/infrastructures/my_nltk_script.py';
+// TMDB APIの設定
 var axiosInstance = axios_1["default"].create({
     baseURL: 'https://api.themoviedb.org/3'
 });
-var responseBody = function (res) {
-    return res.data;
-};
-function tokenize(text) {
-    return new Promise(function (resolve, reject) {
-        // creation of a process by a parent process.
-        var python = (0, child_process_1.spawn)('python', [
-            '/Users/saku/Documents/moviefun-latest/src/core/infrastructures/getKeyword.js',
-            text,
-        ]);
-        var tokens = [];
-        var error = null;
-        python.stdout.on('data', function (data) {
-            console.log(data);
-            tokens = data.toString().trim().split(' ');
-        });
-        python.stderr.on('data', function (data) {
-            console.log(data);
-            error = new Error(data.toString());
-        });
-        python.on('close', function () {
-            if (error) {
-                reject(error);
-            }
-            else {
-                resolve(tokens);
-            }
-        });
-    });
-}
-// afterEmotionのパラメータを返す
-// 名詞と形容詞を抽出する関数
-function extractKeywords(text) {
+// テキスト
+var text = 'I want to feel beautiful and positive after watching it.';
+// Pythonスクリプトを同期的に実行してキーワードを取得する
+var pythonProcess = (0, child_process_1.spawnSync)('python', [PYTHON_SCRIPT_PATH], {
+    input: text
+});
+// Pythonスクリプトから出力されたキーワードを取得する
+var keywords = JSON.parse(pythonProcess.stdout.toString().replace(/'/g, '"'));
+// TMDBからキーワードIDを取得する
+function getKeywordId(keyword) {
     return __awaiter(this, void 0, void 0, function () {
-        var tagged, keywords, _i, tagged_1, word;
+        var url, response, keywordData;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    console.log('API', node_process_1.env.API_KEY);
+                    url = '/search/keyword' + '?api_key=' + '874b2c31cd678740afe326baa8408862' + '&query=' + keyword + '&page=' + 1;
+                    return [4 /*yield*/, axiosInstance.get(url)];
+                case 1:
+                    response = _a.sent();
+                    keywordData = response.data.results[0];
                     console.log('here');
-                    return [4 /*yield*/, tokenize(text)];
-                case 1:
-                    tagged = _a.sent();
-                    keywords = [];
-                    for (_i = 0, tagged_1 = tagged; _i < tagged_1.length; _i++) {
-                        word = tagged_1[_i];
-                        if (word[1].startsWith('NN') || word[1].startsWith('JJ')) {
-                            keywords.push(word[0]);
-                        }
+                    console.log(keywordData);
+                    if (keywordData) {
+                        // console.log(keywordData.id);
+                        return [2 /*return*/, keywordData.id];
                     }
-                    return [2 /*return*/, keywords];
+                    else {
+                        console.log(null);
+                        return [2 /*return*/, null];
+                    }
+                    return [2 /*return*/];
             }
         });
     });
 }
-// テキストデータからキーワードを抽出
-function getKeywords() {
-    return __awaiter(this, void 0, void 0, function () {
-        var textData, keywords;
-        return __generator(this, function (_a) {
-            textData = 'I like to eat pizza';
-            keywords = extractKeywords(textData);
-            console.log(keywords);
-            return [2 /*return*/, keywords];
-        });
-    });
-}
-// テキストデータに基づくTMDBのキーワードを抽出
-function getKeywordIDs(keywords) {
-    return __awaiter(this, void 0, void 0, function () {
-        var keywordIds, _i, keywords_1, keyword, res, results;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    keywordIds = [];
-                    _i = 0, keywords_1 = keywords;
-                    _a.label = 1;
-                case 1:
-                    if (!(_i < keywords_1.length)) return [3 /*break*/, 4];
-                    keyword = keywords_1[_i];
-                    return [4 /*yield*/, axiosInstance.get("/search/keyword", {
-                            params: {
-                                api_key: node_process_1.env.API_KEY,
-                                query: keyword
-                            }
-                        })];
-                case 2:
-                    res = _a.sent();
-                    results = res.data.results;
-                    if (results.length > 0) {
-                        keywordIds.push(results[0].id);
-                    }
-                    _a.label = 3;
-                case 3:
-                    _i++;
-                    return [3 /*break*/, 1];
-                case 4: return [2 /*return*/, keywordIds];
-            }
-        });
-    });
-}
-getKeywords().then(function (res) {
-    console.log(res);
-    getKeywordIDs(res);
+console.log('here', keywords);
+keywords.forEach(function (keyword) {
+    getKeywordId(keyword);
 });
