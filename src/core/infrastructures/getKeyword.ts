@@ -1,28 +1,54 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { env } from 'node:process';
-import nltk from 'nltk';
+import { spawn } from 'child_process';
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: 'https://api.themoviedb.org/3',
-  headers: {
-    'x-api-key': env.API_KEY,
-  },
 });
 
 const responseBody = (res: AxiosResponse) => {
-  //   console.log(res);
   return res.data;
 };
 
+function tokenize(text: string): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
+    // creation of a process by a parent process.
+    const python = spawn('python', [
+      '/Users/saku/Documents/moviefun-latest/src/core/infrastructures/getKeyword.js',
+      text,
+    ]);
+
+    let tokens: string[] = [];
+    let error: Error | null = null;
+    python.stdout.on('data', (data) => {
+      console.log(data);
+      tokens = data.toString().trim().split(' ');
+    });
+
+    python.stderr.on('data', (data) => {
+      console.log(data);
+      error = new Error(data.toString());
+    });
+
+    python.on('close', () => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(tokens);
+      }
+    });
+  });
+}
+
 // afterEmotionのパラメータを返す
 // 名詞と形容詞を抽出する関数
-function extractKeywords(text: string) {
-  const tokens = nltk.word_tokenize(text);
-  const tagged = nltk.pos_tag(tokens);
+async function extractKeywords(text: string) {
+  console.log('here');
+  const tagged = await tokenize(text);
   const keywords = [];
-  for (const [word, tag] of tagged) {
-    if (tag.startsWith('NN') || tag.startsWith('JJ')) {
-      keywords.push(word);
+  for (const word of tagged) {
+    if (word[1].startsWith('NN') || word[1].startsWith('JJ')) {
+      keywords.push(word[0]);
     }
   }
   return keywords;
@@ -30,7 +56,7 @@ function extractKeywords(text: string) {
 
 // テキストデータからキーワードを抽出
 async function getKeywords(): Promise<Array<string>> {
-  const textData = 'Introverted';
+  const textData = 'I like to eat pizza';
   const keywords = extractKeywords(textData);
   console.log(keywords);
   return keywords;

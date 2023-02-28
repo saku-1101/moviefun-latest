@@ -1,5 +1,6 @@
-import nltk.tokenize
+import nltk
 
 def tokenize(text):
     tokens = nltk.word_tokenize(text)
-    return tokens
+    taggedTokens = nltk.pos_tag(tokens)
+    return taggedTokens

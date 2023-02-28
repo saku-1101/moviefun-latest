@@ -38,37 +38,70 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var axios_1 = require("axios");
 var node_process_1 = require("node:process");
-var nltk_1 = require("nltk");
+var child_process_1 = require("child_process");
 var axiosInstance = axios_1["default"].create({
-    baseURL: 'https://api.themoviedb.org/3',
-    headers: {
-        'x-api-key': node_process_1.env.API_KEY
-    }
+    baseURL: 'https://api.themoviedb.org/3'
 });
 var responseBody = function (res) {
-    //   console.log(res);
     return res.data;
 };
+function tokenize(text) {
+    return new Promise(function (resolve, reject) {
+        // creation of a process by a parent process.
+        var python = (0, child_process_1.spawn)('python', [
+            '/Users/saku/Documents/moviefun-latest/src/core/infrastructures/getKeyword.js',
+            text,
+        ]);
+        var tokens = [];
+        var error = null;
+        python.stdout.on('data', function (data) {
+            console.log(data);
+            tokens = data.toString().trim().split(' ');
+        });
+        python.stderr.on('data', function (data) {
+            console.log(data);
+            error = new Error(data.toString());
+        });
+        python.on('close', function () {
+            if (error) {
+                reject(error);
+            }
+            else {
+                resolve(tokens);
+            }
+        });
+    });
+}
 // afterEmotionのパラメータを返す
 // 名詞と形容詞を抽出する関数
 function extractKeywords(text) {
-    var tokens = nltk_1["default"].word_tokenize(text);
-    var tagged = nltk_1["default"].pos_tag(tokens);
-    var keywords = [];
-    for (var _i = 0, tagged_1 = tagged; _i < tagged_1.length; _i++) {
-        var _a = tagged_1[_i], word = _a[0], tag = _a[1];
-        if (tag.startsWith('NN') || tag.startsWith('JJ')) {
-            keywords.push(word);
-        }
-    }
-    return keywords;
+    return __awaiter(this, void 0, void 0, function () {
+        var tagged, keywords, _i, tagged_1, word;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    console.log('here');
+                    return [4 /*yield*/, tokenize(text)];
+                case 1:
+                    tagged = _a.sent();
+                    keywords = [];
+                    for (_i = 0, tagged_1 = tagged; _i < tagged_1.length; _i++) {
+                        word = tagged_1[_i];
+                        if (word[1].startsWith('NN') || word[1].startsWith('JJ')) {
+                            keywords.push(word[0]);
+                        }
+                    }
+                    return [2 /*return*/, keywords];
+            }
+        });
+    });
 }
 // テキストデータからキーワードを抽出
 function getKeywords() {
     return __awaiter(this, void 0, void 0, function () {
         var textData, keywords;
         return __generator(this, function (_a) {
-            textData = 'Introverted';
+            textData = 'I like to eat pizza';
             keywords = extractKeywords(textData);
             console.log(keywords);
             return [2 /*return*/, keywords];
