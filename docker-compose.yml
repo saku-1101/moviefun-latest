@@ -1,0 +1,10 @@
+version: '3'
+services:
+  mecab-node:
+    container_name: mecab-node
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    tty: true # コンテナの起動永続化
+    volumes:
+      - ./:/app

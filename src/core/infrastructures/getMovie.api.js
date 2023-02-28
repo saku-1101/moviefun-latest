@@ -117,9 +117,6 @@ function searchMovie(input) {
     // 関数発火時→新たなセッション．関数もなんでも一新される？
     // もし，urlにconstが使えなかったら変数をgetに直入れ
 }
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-// function getFavoriteMovies(params:type) {
-// }
 function getIDofMovies() {
     var endpoint = '/genre/movie/list';
     var language = '&language=ja-JA';

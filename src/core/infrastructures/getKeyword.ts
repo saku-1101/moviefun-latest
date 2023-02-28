@@ -1,4 +1,4 @@
-import MeCab from 'mecab-async';
+import { MeCab } from 'mecab-client';
 import axios from 'axios';
 
 // TMDB APIキーとベースURL
@@ -16,9 +16,10 @@ async function extractKeywords(text: string): Promise<string[]> {
   // 名詞、形容詞をキーワードとして抽出
   const keywords: string[] = [];
   for (const node of nodes) {
-    const [surface, feature] = node;
-    const pos = feature.split(',')[0];
-    if (pos === '名詞' || pos === '形容詞') {
+    const lexical = node.lexical;
+    const surface = node.surface;
+    // const pos = feature.split(',')[0];
+    if (lexical === '名詞' || lexical === '形容詞') {
       keywords.push(surface);
     }
   }
@@ -49,5 +50,7 @@ async function getKeywordIds(keywords: string[]): Promise<number[]> {
 async function extractKeywordsAndIds(text: string): Promise<number[]> {
   const keywords = await extractKeywords(text);
   const keywordIds = await getKeywordIds(keywords);
+  console.log(keywordIds);
   return keywordIds;
 }
+extractKeywordsAndIds('内向的');
