@@ -1,2 +1,2 @@
 source env.sh
-npm run dev
+node '/Users/saku/Documents/moviefun-latest/src/core/infrastructures/getKeyword.js'  

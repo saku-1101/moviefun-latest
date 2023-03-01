@@ -8,9 +8,6 @@ const PYTHON_SCRIPT_PATH = '/Users/saku/Documents/moviefun-latest/src/core/infra
 // TMDB APIの設定
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: 'https://api.themoviedb.org/3',
-  headers: {
-    'x-api-key': env.REACT_APP_API_KEY,
-  },
 });
 
 async function getKeywords(text: string): Promise<Array<string>> {
@@ -25,9 +22,7 @@ async function getKeywords(text: string): Promise<Array<string>> {
 }
 // TMDBからキーワードIDを取得する
 async function getKeywordId(keyword: string): Promise<number> {
-  console.log(process.env.REACT_APP_API_KEY);
-
-  const url = '/search/keyword' + '?api_key=' + process.env.REACT_APP_API_KEY + '&query=' + keyword + '&page=' + 1;
+  const url = '/search/keyword' + '?api_key=' + env.API_KEY + '&query=' + keyword + '&page=' + 1;
   const response = await axiosInstance.get(url);
   const keywordData = response.data.results[0];
 
@@ -38,15 +33,13 @@ async function getKeywordId(keyword: string): Promise<number> {
   }
 }
 
-export default async function getAllKeywordsIds(text: string): Promise<Array<number>> {
+export default async function getAllKeywordsIds(text: string): Promise<number[]> {
   const ids: Array<number> = [];
   const keywords = await getKeywords(text);
-  Promise.all(
-    keywords.map(async (keyword) => {
-      ids.push(await getKeywordId(keyword));
-    }),
-  );
-  console.log(ids);
+  for (let index = 0; index < keywords.length; index++) {
+    const keyword = keywords[index];
+    ids.push(await getKeywordId(keyword));
+  }
   return ids;
 }
-getAllKeywordsIds('I want to feel beautiful and positive after watching it.');
+// getAllKeywordsIds('I want to feel beautiful and positive after watching it.').then((res) => console.log(res));

@@ -43,10 +43,7 @@ var node_process_1 = require("node:process");
 var PYTHON_SCRIPT_PATH = '/Users/saku/Documents/moviefun-latest/src/core/infrastructures/my_nltk_script.py';
 // TMDB APIの設定
 var axiosInstance = axios_1["default"].create({
-    baseURL: 'https://api.themoviedb.org/3',
-    headers: {
-        'x-api-key': node_process_1.env.REACT_APP_API_KEY
-    }
+    baseURL: 'https://api.themoviedb.org/3'
 });
 function getKeywords(text) {
     return __awaiter(this, void 0, void 0, function () {
@@ -71,8 +68,7 @@ function getKeywordId(keyword) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    console.log(process.env.REACT_APP_API_KEY);
-                    url = '/search/keyword' + '?api_key=' + process.env.REACT_APP_API_KEY + '&query=' + keyword + '&page=' + 1;
+                    url = '/search/keyword' + '?api_key=' + node_process_1.env.API_KEY + '&query=' + keyword + '&page=' + 1;
                     return [4 /*yield*/, axiosInstance.get(url)];
                 case 1:
                     response = _a.sent();
@@ -90,33 +86,31 @@ function getKeywordId(keyword) {
 }
 function getAllKeywordsIds(text) {
     return __awaiter(this, void 0, void 0, function () {
-        var ids, keywords;
-        var _this = this;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var ids, keywords, index, keyword, _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
                     ids = [];
                     return [4 /*yield*/, getKeywords(text)];
                 case 1:
-                    keywords = _a.sent();
-                    Promise.all(keywords.map(function (keyword) { return __awaiter(_this, void 0, void 0, function () {
-                        var _a, _b;
-                        return __generator(this, function (_c) {
-                            switch (_c.label) {
-                                case 0:
-                                    _b = (_a = ids).push;
-                                    return [4 /*yield*/, getKeywordId(keyword)];
-                                case 1:
-                                    _b.apply(_a, [_c.sent()]);
-                                    return [2 /*return*/];
-                            }
-                        });
-                    }); }));
-                    console.log(ids);
-                    return [2 /*return*/, ids];
+                    keywords = _c.sent();
+                    index = 0;
+                    _c.label = 2;
+                case 2:
+                    if (!(index < keywords.length)) return [3 /*break*/, 5];
+                    keyword = keywords[index];
+                    _b = (_a = ids).push;
+                    return [4 /*yield*/, getKeywordId(keyword)];
+                case 3:
+                    _b.apply(_a, [_c.sent()]);
+                    _c.label = 4;
+                case 4:
+                    index++;
+                    return [3 /*break*/, 2];
+                case 5: return [2 /*return*/, ids];
             }
         });
     });
 }
 exports["default"] = getAllKeywordsIds;
-getAllKeywordsIds('I want to feel beautiful and positive after watching it.');
+getAllKeywordsIds('I want to feel beautiful and positive after watching it.').then(function (res) { return console.log(res); });
