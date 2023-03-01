@@ -28,6 +28,10 @@ dist-ssr
 .eslintrc.js
 .prettierrc.js
 
+# env
+env.sh
+env/
+.env
 # test code
 promise.js
 promise.ts
