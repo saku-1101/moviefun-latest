@@ -95,6 +95,8 @@ function getIDofMovies() {
   const endpoint = '/genre/movie/list';
   const language = '&language=ja-JA';
   const url = endpoint + '?api_key=' + env.API_KEY + language;
+  console.log(env.API_KEY);
+
   return axiosInstance
     .get(url)
     .then(responseBody)

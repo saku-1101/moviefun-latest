@@ -8,35 +8,45 @@ const PYTHON_SCRIPT_PATH = '/Users/saku/Documents/moviefun-latest/src/core/infra
 // TMDB APIの設定
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: 'https://api.themoviedb.org/3',
-});
-// テキスト
-const text = 'I want to feel beautiful and positive after watching it.';
-
-// Pythonスクリプトを同期的に実行してキーワードを取得する
-const pythonProcess = spawnSync('python', [PYTHON_SCRIPT_PATH], {
-  input: text,
+  headers: {
+    'x-api-key': env.REACT_APP_API_KEY,
+  },
 });
 
-// Pythonスクリプトから出力されたキーワードを取得する
-const keywords = JSON.parse(pythonProcess.stdout.toString().replace(/'/g, '"'));
+async function getKeywords(text: string): Promise<Array<string>> {
+  // Pythonスクリプトを同期的に実行してキーワードを取得する
+  const pythonProcess = await spawnSync('python', [PYTHON_SCRIPT_PATH], {
+    input: text,
+  });
 
+  // Pythonスクリプトから出力されたキーワードを取得する
+  const keywords = JSON.parse(pythonProcess.stdout.toString().replace(/'/g, '"'));
+  return keywords;
+}
 // TMDBからキーワードIDを取得する
-async function getKeywordId(keyword: string): Promise<any> {
-  const url = '/search/keyword' + '?api_key=' + '874b2c31cd678740afe326baa8408862' + '&query=' + keyword + '&page=' + 1;
+async function getKeywordId(keyword: string): Promise<number> {
+  console.log(process.env.REACT_APP_API_KEY);
+
+  const url = '/search/keyword' + '?api_key=' + process.env.REACT_APP_API_KEY + '&query=' + keyword + '&page=' + 1;
   const response = await axiosInstance.get(url);
   const keywordData = response.data.results[0];
-  console.log(keywordData);
 
   if (keywordData) {
-    // console.log(keywordData.id);
     return keywordData.id;
   } else {
-    console.log(null);
-    return null;
+    return 0;
   }
 }
 
-console.log('here', keywords);
-keywords.forEach((keyword: string) => {
-  getKeywordId(keyword);
-});
+export default async function getAllKeywordsIds(text: string): Promise<Array<number>> {
+  const ids: Array<number> = [];
+  const keywords = await getKeywords(text);
+  Promise.all(
+    keywords.map(async (keyword) => {
+      ids.push(await getKeywordId(keyword));
+    }),
+  );
+  console.log(ids);
+  return ids;
+}
+getAllKeywordsIds('I want to feel beautiful and positive after watching it.');
