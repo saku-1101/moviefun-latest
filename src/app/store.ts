@@ -1,5 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
 import InputSliceReducer from '../features/InputStore/InputSlice';
+import { composeWithDevTools } from '@redux-devtools/extension';
+
+const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
 export default configureStore({
   reducer: {
