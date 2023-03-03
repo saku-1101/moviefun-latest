@@ -32,6 +32,11 @@ dist-ssr
 env.sh
 env/
 .env
+# env
+env.sh
+env/
+.env
 # test code
 promise.js
 promise.ts
+
