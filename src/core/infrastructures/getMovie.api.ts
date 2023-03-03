@@ -4,9 +4,6 @@ import { env } from 'node:process';
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: 'https://api.themoviedb.org/3',
-  headers: {
-    'x-api-key': env.API_KEY,
-  },
 });
 
 const responseBody = (res: AxiosResponse) => {
@@ -34,13 +31,23 @@ function getTheatreMovies(): Promise<void> {
   }
   query_gte = year + '-' + month + '-' + day;
   const endpoint = '/discover/movie';
-  const query_1: string =
-    '&primary_release_date.gte=' + query_gte + '&primary_release_date.lte=' + query_lte + '&with_release_type=2%7C3'; // １ヶ月前〜今日
-  const query_2 = '&sort_by=popularity.desc';
-  const language = '&region=JP|US&language=ja-JA&page=1';
-  const url = endpoint + '?api_key=' + env.API_KEY + language + query_1 + query_2;
+  //   What movies are in theatres?
+  // URL: /discover/movie?primary_release_date.gte=2014-09-15&primary_release_date.lte=2014-10-22
+  // const query_1: string =
+  //   '&primary_release_date.gte=' + query_gte + '&primary_release_date.lte=' + query_lte + '&with_release_type=2%7C3'; // １ヶ月前〜今日
   return axiosInstance
-    .get(url)
+    .get(endpoint, {
+      params: {
+        api_key: env.API_KEY,
+        region: 'JP|US',
+        language: 'ja-JA',
+        page: '1',
+        primary_release_date.gte: query_gte,
+        primary_release_date.lte: query_lte,
+        with_release_type: '2%7C3',
+        sort_by: 'popularity.desc',
+      }
+    })
     .then(responseBody)
     .catch((err) => {
       console.log(err);
@@ -49,10 +56,15 @@ function getTheatreMovies(): Promise<void> {
 
 function getPopMovies(): Promise<void> {
   const endpoint = '/movie/popular';
-  const query = '&region=JP|US&language=ja-JA&page=1';
-  const url: string = endpoint + '?api_key=' + env.API_KEY + query;
   return axiosInstance
-    .get(url)
+    .get(endpoint, {
+      params: {
+        api_key: env.API_KEY,
+        region: 'JP|US',
+        language: 'ja-JA',
+        page: '1',
+      },
+    })
     .then(responseBody)
     .catch((err) => {
       console.log(err);
@@ -63,12 +75,17 @@ function getTopOfYear(): Promise<void> {
   const date: Date = new Date();
   const year: number = date.getUTCFullYear();
   const endpoint = '/discover/movie';
-  const query_1 = '&primary_release_year=';
-  const query_2 = '&sort_by=popularity.desc';
-  const language = '&region=JP|US&language=ja-JA&page=1';
-  const url = endpoint + '?api_key=' + env.API_KEY + language + query_1 + (year - 1).toString() + query_2;
   return axiosInstance
-    .get(url)
+    .get(endpoint, {
+      params: {
+        api_key: env.API_KEY,
+        region: 'JP|US',
+        language: 'ja-JA',
+        page: '1',
+        primary_release_year: (year - 1).toString(),
+        sort_by: 'popularity.desc',
+      },
+    })
     .then(responseBody)
     .catch((err) => {
       console.log(err);
@@ -77,10 +94,14 @@ function getTopOfYear(): Promise<void> {
 
 function searchMovie(input: string): Promise<void> {
   const endpoint = '/search/movie';
-  const language = '&language=ja-JA';
-  const url = endpoint + '?api_key=' + env.API_KEY + '&query=' + input + language;
   return axiosInstance
-    .get(url)
+    .get(endpoint, {
+      params: {
+        api_key: env.API_KEY,
+        query: input,
+        language: 'ja-JA',
+      },
+    })
     .then(responseBody)
     .catch((err) => {
       console.log(err);
@@ -93,12 +114,13 @@ function searchMovie(input: string): Promise<void> {
 
 function getIDofMovies() {
   const endpoint = '/genre/movie/list';
-  const language = '&language=ja-JA';
-  const url = endpoint + '?api_key=' + env.API_KEY + language;
-  console.log(env.API_KEY);
-
   return axiosInstance
-    .get(url)
+    .get(endpoint, {
+      params: {
+        api_key: env.API_KEY,
+        language: 'ja-JA',
+      },
+    })
     .then(responseBody)
     .catch((error) => {
       if (error.response) {

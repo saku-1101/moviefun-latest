@@ -40,10 +40,7 @@ var axios_1 = require("axios");
 var node_process_1 = require("node:process");
 // import Movie from '../domains/models/movie.interface'
 var axiosInstance = axios_1["default"].create({
-    baseURL: 'https://api.themoviedb.org/3',
-    headers: {
-        'x-api-key': node_process_1.env.API_KEY
-    }
+    baseURL: 'https://api.themoviedb.org/3'
 });
 var responseBody = function (res) {
     //   console.log(res);
@@ -119,11 +116,13 @@ function searchMovie(input) {
 }
 function getIDofMovies() {
     var endpoint = '/genre/movie/list';
-    var language = '&language=ja-JA';
-    var url = endpoint + '?api_key=' + node_process_1.env.API_KEY + language;
-    console.log(node_process_1.env.API_KEY);
     return axiosInstance
-        .get(url)
+        .get(endpoint, {
+        params: {
+            api_key: node_process_1.env.API_KEY,
+            language: 'ja-JA'
+        }
+    })
         .then(responseBody)["catch"](function (error) {
         if (error.response) {
             console.error("Error: ".concat(error.response.status, " ").concat(error.response.statusText));

@@ -22,8 +22,14 @@ async function getKeywords(text: string): Promise<Array<string>> {
 }
 // TMDBからキーワードIDを取得する
 async function getKeywordId(keyword: string): Promise<number> {
-  const url = '/search/keyword' + '?api_key=' + env.API_KEY + '&query=' + keyword + '&page=' + 1;
-  const response = await axiosInstance.get(url);
+  const endpoint = '/search/keyword';
+  const response = await axiosInstance.get(endpoint, {
+    params: {
+      api_key: env.API_KEY,
+      query: keyword,
+      page: '1',
+    },
+  });
   const keywordData = response.data.results[0];
 
   if (keywordData) {
