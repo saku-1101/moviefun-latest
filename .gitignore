@@ -25,8 +25,8 @@ dist-ssr
 
 
 # linter and prettier
-.eslintrc.js
-.prettierrc.js
+.eslintrc
+.prettierrc
 
 # env
 env.sh
