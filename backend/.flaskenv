@@ -1,0 +1,2 @@
+FLASK_APP=my_nltk_script.py
+FLASK_ENV=production
