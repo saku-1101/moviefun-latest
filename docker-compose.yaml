@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+  nginx:
+      image: nginx:alpine
+      container_name: nginx
+      ports:
+        - 8000:80
+      volumes:
+        - ./client/build:/var/www
+        - ./nginx/:/etc/nginx/
+      depends_on:
+        - frontend
+        - backend
+  frontend:
+    container_name: "moviefun-client"
+    build:
+      context: ./client
+      dockerfile: ./Dockerfile
+    working_dir: /app
+    ports:
+      - 8080:8080
+    volumes:
+      - ./client:/app
+    tty: true
+    entrypoint: sh -c "npm rebuild esbuild"
+    command: npm run preview
+  backend:
+    restart: always
+    container_name: "moviefun-backend"
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend:/app
+    environment:
+      - FLASK_DEBUG=1
