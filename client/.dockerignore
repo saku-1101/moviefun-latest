@@ -1,6 +1,4 @@
-node_modules
-Dockerfile
+**/node_modules/
 .git
 .gitignore
 .dockerignore
-dist
