@@ -4,15 +4,13 @@ FROM node:16-alpine as builder
 WORKDIR /app
 
 # Copy dependency definitions
-COPY package.json .
-COPY package-lock.json .
-# COPY run.sh .
-# COPY env.sh .
+COPY package.json /app
+COPY package-lock.json /app
 
 RUN npm install
+# RUN npm install esbuild
 
 COPY . /app
-
 
 RUN npm run build
 
@@ -37,13 +35,7 @@ EXPOSE 8080
 
 # RUN chmod 744 run.sh
 # RUN chmod 744 env.sh
-ENTRYPOINT [ "npm", "run", "preview" ]
+# ENTRYPOINT [ "npm", "run", "preview" ]
 
 # Env.shと同プロセスでサーバ構築を実行するようなdockerコンテナを作成しても，デプロイ時に要するenv.shがgithub上にないので，ワークフローでコンテナをラン＆アップすると時に実行エラーが出る気がしないでもない
 # docker run -dt -p 8080:8080 -e WATCHPACK_POLLING=true -v PWD:/app/src --name moviefun-lts moviefun-lts
-# FROM nginx:alpine
-# COPY --from=build /app /usr/share/nginx/html
-# COPY nginx.default.conf /etc/nginx/nginx.default.conf
-
-# EXPOSE 8080
-# CMD ["nginx", "-g", "daemon off;"]
