@@ -7,23 +7,23 @@ services:
       ports:
         - 8000:80
       volumes:
-        - ./client/app/build:/var/www/build
+        - ./frontend/dist/:/var/www/dist/
         - ./nginx/:/etc/nginx/
       depends_on:
         - frontend
         - backend
   frontend:
-    container_name: "moviefun-client"
+    container_name: "moviefun-frontend"
     build:
-      context: ./client
+      context: ./frontend
       dockerfile: ./Dockerfile
     working_dir: /app
     ports:
       - 8080:8080
     volumes:
-      - ./client:/app
+      - ./frontend:/app
+      - /app/node_modules
     tty: true
-    command: sh -c "npm rebuild esbuild && npm run preview"
   backend:
     restart: always
     container_name: "moviefun-backend"
