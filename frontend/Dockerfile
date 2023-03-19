@@ -34,7 +34,7 @@ EXPOSE 8080
 
 # RUN chmod 744 run.sh
 # RUN chmod 744 env.sh
-ENTRYPOINT [ "npm", "run", "preview" ]
+ENTRYPOINT [ "npm", "run", "dev" ]
 
 # Env.shと同プロセスでサーバ構築を実行するようなdockerコンテナを作成しても，デプロイ時に要するenv.shがgithub上にないので，ワークフローでコンテナをラン＆アップすると時に実行エラーが出る気がしないでもない
 # docker run -dt -p 8080:8080 -e WATCHPACK_POLLING=true -v PWD:/app/src --name moviefun-lts moviefun-lts
